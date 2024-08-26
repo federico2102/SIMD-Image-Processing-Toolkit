@@ -1,0 +1,267 @@
+\subsection{Blit}
+
+Esta operaci\'on recibe m\'as par\'ametros que las dem\'as; adem\'as de tener las im\'agenes fuente y destino (de tama\~no w x h), 
+se recibe una imagen adicional \textbf{blit} tambi\'en con su respectivo tama\~no (bw x bh), que se utilizar\'a a modo de m\'ascara.
+Se cumple que $bw \leq w \wedge bh \leq h$.\\
+
+La aplicaci\'on de este filtro consiste en generar una nueva imagen combinando la original con el \textbf{blit}.
+Un color de la imagen \textbf{blit} es considerado como transparente,
+para que en la combinaci\'on algunos pixeles del \textbf{blit} queden por encima de la imagen original y otros no se vean.
+
+Para este trabajo pr\'actico, la imagen \textbf{blit} ser\'a una imagen de Per\'on.
+Decimos que una im\'agen ha sido ``Peronizada'' cuando en su extremo superior derecho podemos ver a Per\'on agitando su brazo.
+% La aplicaci\'on de este filtro consiste en generar una nueva imagen combinando la original con la de Per\'on (blit) para as\'i 
+% obtener una versi\'on ``Peronizada'' de la im\'agen fuente.
+
+\vskip 8pt
+Para cada p\'ixel $p$ en la imagen de Per\'on (blit):\\
+$dst(p) = \begin{cases}
+    src(p) & \mathrm{si \;} blit(p) \mathrm{\; es \; de \; color \; magenta, \; es \; decir \; sus \; colores \; son \;} (255, 0, 255)\\
+    blit(p) & \mathrm{si \; no}
+\end{cases}$ \\
+
+Es decir que si el p\'ixel en la imagen de Per\'on es magenta, entonces el nuevo p\'ixel tendr\'a los colores del p\'ixel correspondiente 
+en la imagen original; y si no los colores del p\'ixel en la imagen de Per\'on. \\
+
+Las columnas y filas que no se puedan procesar de esta manera, es decir, 
+las primeras $h - bh$ filas; y de las filas restantes, las primeras $w - bw$ columnas; 
+quedar\'an igual que como estaban originalmente. \\
+
+Nota: como debe valer la restricci\'on $bw \leq w \wedge bh \leq h$, esta operaci\'on 
+no podr\'a ser aplicada a im\'agenes cuyo tama\~no sea menor a 89 p\'ixeles de ancho 
+x 128 de alto.
+
+%M\'as informaci\'on: http://en.wikipedia.org/wiki/Bit_blit
+
+\subsubsection*{Implementación y uso}
+\noindent Funciones: \code{blit_c}, \code{blit_asm}
+
+\noindent Parámetros:
+\begin{enumerate}[-]
+\item \code{unsigned char *blit}: Imagen que se va a blitear
+\item \code{int bh}: Alto de la imagen que se va a blitear
+\item \code{int bw}: Ancho de la imagen que se va a blitear
+\item \code{int b_row_size}: Bytes por fila de la imagen que se va a blitear
+\end{enumerate}
+
+
+% -----------------------------------------------------------------
+% -----------------------------------------------------------------
+
+\subsection{Monocromatizar norma $\inf$ } %(normas $1$ e $\inf$)}
+
+Para convertir una imagen a escala de grises debemos contar con una funci'on 
+que sea cap'az de monocromatizar una imagen a color. La funci'on m'as sencilla 
+para hacer esto es:
+
+\begin{center}
+  $f(p) = \sqrt[\epsilon]{\alpha R^\epsilon + \beta G^\epsilon + 
+    \gamma B^\epsilon}$
+\end{center}
+
+La funci'on $f$ se aplica a cada p'ixel $p$ de la imagen; $R$, $G$, $B$ son 
+sus componentes de color, $\alpha$, $\beta$ y $\gamma$ son coeficientes entre 
+$0$ y $1$, y $\epsilon$ es un exponente entre $1$ e $\infty$.\\
+
+En nuestro caso se implementar'a la funci'on de conversi'on a escala de grises 
+para un casos extremo, donde $\epsilon$ en la funci'on vale  
+$\epsilon = \infty$. Adem'as, se fijar'an los par'ametros restantes en 
+$\alpha = 1/4$, $\beta = 1/2$ y $\gamma = 1/4$. Luego, tenemos la siguiente
+funcion para monocromatizar:
+
+%para los casos extremos, donde $\epsilon$ en la funci'on vale $\epsilon = 1$ o 
+%$\epsilon = \infty$. Adem'as, se fijar'an los par'ametros restantes en 
+%$\alpha = 1/4$, $\beta = 1/2$ y $\gamma = 1/4$. Luego, tenemos dos posibles
+%funciones para monocromatizar:
+
+%\begin{center}
+%  $I_{out\_uno}(p) = \frac{(R + 2G + B)}{4} (\epsilon = 1)$
+%\end{center}
+
+\begin{center}
+  $I_{out\_infinito}(p) = max(R, G, B) (\epsilon = \infty)$
+\end{center}
+
+
+\subsubsection*{Implementación y uso}
+\noindent Funciones: \\
+\code{monocromatizar_inf_c}, \code{monocromatizar_inf_asm},
+ 
+\noindent Parámetros: ninguno
+
+
+
+% -----------------------------------------------------------------
+% -----------------------------------------------------------------
+
+\subsection{Efecto Ondas}
+
+Deber'an implementar en \textbf{SSE} la funci'on ``ondas''. Esta combina la 
+imagen original con una imagen de ondas, dando tonos m'as oscuros y m'as claros 
+en forma de onda. Estas se generan desde el centro de la imagen hacia 
+sus bordes de manera conc'entrica.\\
+
+Para simplificar la tarea de programaci'on se proporciona una implementaci'on 
+en C de este efecto en el archivo ``ondas\_c.c''.\\
+
+El procedimiento a realizar es el siguiente:
+
+\begin{algorithm}[H]
+  \begin{algorithmic}[1]
+    \FORALL{pixel ubicado en la posici'on $\mathbf{(x, y)}$}
+      \STATE $d_x \gets x - x_0$
+
+      \STATE
+
+      \STATE $d_y \gets y - y_0$
+
+      \STATE
+
+      \STATE $d_{xy} \gets \sqrt{d_{x}^2+d_{y}^2}$
+
+      \STATE
+
+      \STATE $r \gets \frac{(d_{xy} - RADIUS)}{WAVELENGTH}$
+
+      \STATE
+
+      \STATE $a \gets \frac{1}{1 + (\frac{r}{TRAINWIDTH})^2 }$
+
+      \STATE
+
+      \STATE $t \gets ( r-floor(r) ) \cdot 2 \cdot \pi - \pi$
+
+      \STATE
+
+      \STATE $prof \gets a \cdot (t - \frac{t^3}{6}+\frac{t^5}{120}-\frac{t^7}{5040})$
+
+      \STATE
+
+      \STATE $pixel = prof \cdot 64 + I_{src}(x, y)$    
+
+      \STATE
+
+      \STATE $I_{dst}(x, y) = saturar(pixel)$
+    \ENDFOR
+  \end{algorithmic}
+  \caption{$ondas (I_{src}, I_{dst}, x_0, y_0)$}
+  \label{alg:ondas}
+\end{algorithm}
+
+donde:
+
+\begin{itemize}
+  \item $x_0$ e $y_0$ representan la posici'on donde est'a centrada la onda,
+  \item $RADIUS$, $WAVELENGTH$ y $TRAINWIDTH$ son constantes que definen la 
+  forma de la onda y
+  \item $saturar(x)$ es una funci'on que retorna $0$ si $x$ es menor $0$, $255$
+  si es mayor a $255$ y $x$ en cualquier otro caso.
+\end{itemize}
+
+\subsubsection*{Implementación y uso}
+
+\noindent Funciones: \code{ondas_c}, \code{ondas_asm},
+
+\noindent Parámetros: ninguno
+
+\noindent Ejemplo de uso: \code{ondas -i c lena.bmp}
+
+
+
+
+% -----------------------------------------------------------------
+% -----------------------------------------------------------------
+
+\subsection{Edge}
+
+Puede definirse como un borde a los p\'ixeles donde la intensidad de la imagen cambia de forma abrupta. 
+Si se considera una funci\'on de intensidad de la imagen, entonces lo que se busca son saltos en dicha funci\'on.
+La idea b\'asica detr\'as de cualquier detector de bordes es el c\'alculo de un operador local de derivaci\'on. \\
+ 
+
+Vamos a usar en este caso el operador de Laplace, cuya matriz es
+
+$$ M = \left(
+\begin{matrix}
+    0.5 & 1 & 0.5 \\
+    1 & -6 & 1 \\
+    0.5 & 1 & 0.5
+\end{matrix}
+\right)$$
+
+
+Para obtener los bordes, se posiciona el centro de la matr\'iz de 
+Laplace en cada posici\'on $(x, y)$ y se realiza la siguiente operaci\'on
+
+$$dst(x, y) = \sum_{k = 0}^2 \sum_{l = 0}^2 src(x + k - 1, y + l - 1) * M(k, l)$$
+
+Es decir $dst(x, y) = $
+\begin{center}
+    $\begin{matrix}
+        src(x - 1, y - 1) * M_{00} & + & src(x - 1, y) * M_{01} & + & src(x - 1, y + 1) * M_{02} & +\\
+        src(x, y - 1) * M_{10} & + & src(x, y1) * M_{11} & + & src(x, y + 1) * M_{12} & +\\ 
+        src(x + 1, y - 1) * M_{20} & + & src(x + 1, y) * M_{21} & + & src(x + 1, y + 1) * M_{22} &
+    \end{matrix}$
+\end{center}
+
+Este filtro opera sobre imágenes en escala de grises (1 componente de color por píxel).
+En los bordes que no se pueden procesar según la fórmula anterior (por estar a los costados de la
+imagen), aplica la fórmula $dst(x, y) = src(x,y)$.
+
+\subsubsection*{Implementación y uso}
+
+\noindent Funciones: \code{edge_c}, \code{edge_asm}
+
+\noindent Parámetros: ninguno
+
+
+
+
+% -----------------------------------------------------------------
+% -----------------------------------------------------------------
+
+\subsection{Temperatura}
+
+    El filtro temperatura toma una imagen fuente y genera un
+    efecto que simula un mapa de calor. El filtro toma
+    los tres componentes del cada pixel, los suma y divide por 3, y califica a eso
+    como la temperatura $t$.
+
+    \begin{center}
+    $\mathsf{t}_{(i,j)} = \lfloor(\mathsf{src}.r_{(i,j)} + \mathsf{src}.g_{(i,j)} + \mathsf{src}.b_{(i,j)}) / 3\rfloor$
+	\end{center}
+    
+    En función de la temperatura, se determina el color en la imagen destino. 
+    Para evitar diferencias con los resultados la cátedra, la 
+    temperatura debe truncarse y guardarse en una variable de tipo entero.
+
+    \begin{center}
+	\begin{displaymath}
+	\mathsf{dst}_{(i,j)}<r,g,b> = \left\{
+	\begin{array}{l l}
+				<0,0, 128 + t \cdot 4> & \text{si }t < 32\\
+				<0, (t - 32) \cdot 4, 255> & \text{si }32 \le t < 96\\
+				<(t-96) \cdot 4, 255, 255 - (t-96) \cdot 4> & \text{si }96 \le t < 160\\
+				<255, 255 - (t - 160) \cdot 4, 0> & \text{si }160 \le t < 224\\
+				<255 - (t - 224) \cdot 4, 0 , 0> & \text{si no} \\
+	\end{array}
+	\right.
+	\end{displaymath}
+	\end{center}
+	
+    \newpage
+
+
+
+
+\subsubsection*{Implementación y uso}
+
+\noindent Funciones: \code{temperature_c}, \code{temperature_asm},
+
+\noindent Parámetros: ninguno
+
+\noindent Ejemplo de uso: \code{temperature -i c lena.bmp}
+
+
+% -----------------------------------------------------------------
+% -----------------------------------------------------------------
